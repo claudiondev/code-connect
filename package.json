@@ -10,6 +10,7 @@
     "dev:next": "pnpm --filter next-app dev",
     "build:next": "pnpm --filter next-app build",
     "lint:next": "pnpm --filter next-app lint",
-    "start:next": "pnpm --filter next-app start"
+    "start:next": "pnpm --filter next-app start",
+    "test:next": "pnpm --filter next-app test"
   }
 }
