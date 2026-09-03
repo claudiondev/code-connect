@@ -9,6 +9,10 @@ export type PasswordFieldProps = Omit<FormFieldProps, "type" | "endAdornment">;
 
 export function PasswordField(props: PasswordFieldProps) {
   const [visible, setVisible] = useState(false);
+  // Inclui o label do campo no nome acessível do botão: uma página pode ter
+  // mais de um PasswordField (ex.: cadastro com "senha" + "confirmar senha"),
+  // e um aria-label fixo faria os dois botões colidirem no nome acessível.
+  const toggleLabel = `${visible ? "Ocultar" : "Mostrar"} ${props.label}`;
 
   return (
     <FormField
@@ -18,7 +22,7 @@ export function PasswordField(props: PasswordFieldProps) {
         <button
           type="button"
           onClick={() => setVisible((current) => !current)}
-          aria-label={visible ? "Ocultar senha" : "Mostrar senha"}
+          aria-label={toggleLabel}
           className="text-muted hover:text-white"
         >
           {visible ? (

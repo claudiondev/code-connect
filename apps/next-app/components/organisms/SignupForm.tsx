@@ -1,11 +1,13 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { FormField } from "@/components/molecules/FormField";
 import { PasswordField } from "@/components/molecules/PasswordField";
 import { Button } from "@/components/atoms/Button";
+import { FormErrorAlert } from "@/components/atoms/FormErrorAlert";
 import { signUp } from "@/lib/auth";
 import { isValidEmail, MIN_PASSWORD_LENGTH } from "@/lib/validation";
+import { useAuthForm } from "@/lib/useAuthForm";
 
 interface FieldErrors {
   name?: string;
@@ -14,80 +16,42 @@ interface FieldErrors {
   confirmPassword?: string;
 }
 
-type Status = "idle" | "loading" | "error";
-
 export function SignupForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [status, setStatus] = useState<Status>("idle");
-  const [formError, setFormError] = useState<string | null>(null);
 
-  function validate(): FieldErrors {
-    const errors: FieldErrors = {};
+  const { fieldErrors, formError, isLoading, handleSubmit } =
+    useAuthForm<FieldErrors>({
+      validate: () => {
+        const errors: FieldErrors = {};
 
-    if (!name.trim()) {
-      errors.name = "Informe seu nome.";
-    }
+        if (!name.trim()) {
+          errors.name = "Informe seu nome.";
+        }
 
-    if (!isValidEmail(email)) {
-      errors.email = "Informe um email válido.";
-    }
+        if (!isValidEmail(email)) {
+          errors.email = "Informe um email válido.";
+        }
 
-    if (password.length < MIN_PASSWORD_LENGTH) {
-      errors.password = `A senha precisa de pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`;
-    }
+        if (password.length < MIN_PASSWORD_LENGTH) {
+          errors.password = `A senha precisa de pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`;
+        }
 
-    if (confirmPassword !== password) {
-      errors.confirmPassword = "As senhas não coincidem.";
-    }
+        if (confirmPassword !== password) {
+          errors.confirmPassword = "As senhas não coincidem.";
+        }
 
-    return errors;
-  }
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (status === "loading") {
-      return;
-    }
-
-    const errors = validate();
-    setFieldErrors(errors);
-    setFormError(null);
-
-    if (Object.keys(errors).length > 0) {
-      setStatus("error");
-      return;
-    }
-
-    setStatus("loading");
-
-    const result = await signUp({ name, email, password });
-
-    if (!result.ok) {
-      setStatus("error");
-      setFormError(result.error ?? "Não foi possível criar a conta. Tente novamente.");
-      return;
-    }
-
-    setStatus("idle");
-  }
-
-  const isLoading = status === "loading";
+        return errors;
+      },
+      submit: () => signUp({ name: name.trim(), email, password }),
+      fallbackError: "Não foi possível criar a conta. Tente novamente.",
+    });
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
-      {formError && (
-        <p
-          role="alert"
-          className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-400"
-        >
-          {formError}
-        </p>
-      )}
+      {formError && <FormErrorAlert>{formError}</FormErrorAlert>}
 
       <FormField
         label="nome"
