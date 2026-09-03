@@ -4,25 +4,32 @@ import { useState } from "react";
 import { FormField } from "@/components/molecules/FormField";
 import { PasswordField } from "@/components/molecules/PasswordField";
 import { Button } from "@/components/atoms/Button";
-import { TextLink } from "@/components/atoms/TextLink";
 import { FormErrorAlert } from "@/components/atoms/FormErrorAlert";
-import { signInWithPassword } from "@/lib/auth";
+import { signUp } from "@/lib/auth";
 import { isValidEmail, MIN_PASSWORD_LENGTH } from "@/lib/validation";
 import { useAuthForm } from "@/lib/useAuthForm";
 
 interface FieldErrors {
+  name?: string;
   email?: string;
   password?: string;
+  confirmPassword?: string;
 }
 
-export function LoginForm() {
+export function SignupForm() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const { fieldErrors, formError, isLoading, handleSubmit } =
     useAuthForm<FieldErrors>({
       validate: () => {
         const errors: FieldErrors = {};
+
+        if (!name.trim()) {
+          errors.name = "Informe seu nome.";
+        }
 
         if (!isValidEmail(email)) {
           errors.email = "Informe um email válido.";
@@ -32,15 +39,30 @@ export function LoginForm() {
           errors.password = `A senha precisa de pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`;
         }
 
+        if (confirmPassword !== password) {
+          errors.confirmPassword = "As senhas não coincidem.";
+        }
+
         return errors;
       },
-      submit: () => signInWithPassword({ email, password }),
-      fallbackError: "Não foi possível entrar. Tente novamente.",
+      submit: () => signUp({ name: name.trim(), email, password }),
+      fallbackError: "Não foi possível criar a conta. Tente novamente.",
     });
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
       {formError && <FormErrorAlert>{formError}</FormErrorAlert>}
+
+      <FormField
+        label="nome"
+        type="text"
+        placeholder="Ada Lovelace"
+        autoComplete="name"
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        error={fieldErrors.name}
+        disabled={isLoading}
+      />
 
       <FormField
         label="email"
@@ -53,25 +75,28 @@ export function LoginForm() {
         disabled={isLoading}
       />
 
-      <div>
-        <PasswordField
-          label="senha"
-          placeholder="••••••••"
-          autoComplete="current-password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          error={fieldErrors.password}
-          disabled={isLoading}
-        />
-        <div className="mt-1.5 text-right">
-          <TextLink href="#" className="text-xs">
-            esqueci a senha
-          </TextLink>
-        </div>
-      </div>
+      <PasswordField
+        label="senha"
+        placeholder="••••••••"
+        autoComplete="new-password"
+        value={password}
+        onChange={(event) => setPassword(event.target.value)}
+        error={fieldErrors.password}
+        disabled={isLoading}
+      />
+
+      <PasswordField
+        label="confirmar senha"
+        placeholder="••••••••"
+        autoComplete="new-password"
+        value={confirmPassword}
+        onChange={(event) => setConfirmPassword(event.target.value)}
+        error={fieldErrors.confirmPassword}
+        disabled={isLoading}
+      />
 
       <Button type="submit" fullWidth loading={isLoading}>
-        Entrar
+        Criar conta
       </Button>
     </form>
   );

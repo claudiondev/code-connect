@@ -22,9 +22,30 @@ export async function signInWithPassword(
   return { ok: true };
 }
 
+export interface SignUpCredentials {
+  name: string;
+  email: string;
+  password: string;
+}
+
 /**
- * Pontos de integração para login social. Sem provedor real nesta entrega —
- * ligar a um fluxo OAuth (GitHub/Google) fica para quando o backend existir.
+ * Stub de cadastro client-side, mesmo racional de `signInWithPassword`:
+ * isolado aqui para virar Server Action ou `POST /api/auth/users` (REST) sem
+ * tocar em SignupForm.
+ */
+export async function signUp(
+  credentials: SignUpCredentials
+): Promise<AuthResult> {
+  await new Promise((resolve) => setTimeout(resolve, 600));
+  void credentials;
+
+  return { ok: true };
+}
+
+/**
+ * Pontos de integração para login/cadastro social. Sem provedor real nesta
+ * entrega — ligar a um fluxo OAuth (GitHub/Google) fica para quando o
+ * backend existir.
  */
 export function signInWithGithub(): void {}
 export function signInWithGoogle(): void {}
