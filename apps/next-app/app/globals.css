@@ -1,3 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-950: #050807;
+  --color-ink-900: #0a100e;
+  --color-ink-800: #111a17;
+  --color-line: #1c2b26;
+  --color-accent: #00e5a0;
+  --color-muted: #7d918b;
+
+  --font-sans: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* Mantidas para a home (app/page.tsx + page.module.css), que fica fora do
+   escopo das rotas de auth e continua com o visual claro/escuro do scaffold. */
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -19,15 +35,13 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   box-sizing: border-box;
-  padding: 0;
-  margin: 0;
 }
 
 a {
@@ -39,4 +53,35 @@ a {
   html {
     color-scheme: dark;
   }
+}
+
+/*
+ * Fundo decorativo da coluna hero (rotas de auth): grid sutil + glow verde
+ * à direita. As rotas de auth são sempre dark (não seguem o tema do SO como
+ * a home), então fixam color-scheme aqui, escopado a esta subárvore, para
+ * que controles nativos do navegador (autofill, scrollbar) combinem com o
+ * fundo escuro independente do tema claro/escuro do sistema.
+ */
+.auth-backdrop {
+  color-scheme: dark;
+  background-image:
+    radial-gradient(
+      ellipse 60% 50% at 100% 20%,
+      color-mix(in oklab, var(--color-accent) 16%, transparent),
+      transparent
+    ),
+    linear-gradient(
+      to right,
+      color-mix(in oklab, var(--color-line) 60%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-line) 60%, transparent) 1px,
+      transparent 1px
+    );
+  background-size:
+    100% 100%,
+    40px 40px,
+    40px 40px;
 }
