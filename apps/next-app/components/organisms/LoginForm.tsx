@@ -41,6 +41,10 @@ export function LoginForm() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    if (status === "loading") {
+      return;
+    }
+
     const errors = validate();
     setFieldErrors(errors);
     setFormError(null);

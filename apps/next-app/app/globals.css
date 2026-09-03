@@ -12,6 +12,20 @@
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
+/* Mantidas para a home (app/page.tsx + page.module.css), que fica fora do
+   escopo das rotas de auth e continua com o visual claro/escuro do scaffold. */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
 html,
 body {
   max-width: 100vw;
@@ -19,8 +33,8 @@ body {
 }
 
 body {
-  color: var(--color-muted);
-  background: var(--color-ink-950);
+  color: var(--foreground);
+  background: var(--background);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -35,8 +49,21 @@ a {
   text-decoration: none;
 }
 
-/* Fundo decorativo da coluna hero: grid sutil + glow verde à direita. */
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+/*
+ * Fundo decorativo da coluna hero (rotas de auth): grid sutil + glow verde
+ * à direita. As rotas de auth são sempre dark (não seguem o tema do SO como
+ * a home), então fixam color-scheme aqui, escopado a esta subárvore, para
+ * que controles nativos do navegador (autofill, scrollbar) combinem com o
+ * fundo escuro independente do tema claro/escuro do sistema.
+ */
 .auth-backdrop {
+  color-scheme: dark;
   background-image:
     radial-gradient(
       ellipse 60% 50% at 100% 20%,

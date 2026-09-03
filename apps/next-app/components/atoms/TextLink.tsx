@@ -1,5 +1,6 @@
 import Link, { LinkProps } from "next/link";
 import { ReactNode } from "react";
+import { cn } from "@/lib/cn";
 
 export interface TextLinkProps extends LinkProps {
   children: ReactNode;
@@ -13,9 +14,7 @@ export function TextLink({
 }: TextLinkProps) {
   return (
     <Link
-      className={["text-accent hover:underline underline-offset-2", className]
-        .filter(Boolean)
-        .join(" ")}
+      className={cn("text-accent hover:underline underline-offset-2", className)}
       {...props}
     >
       {children}

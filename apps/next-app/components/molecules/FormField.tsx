@@ -1,6 +1,7 @@
 import { ReactNode, useId } from "react";
 import { Label } from "@/components/atoms/Label";
 import { Input, InputProps } from "@/components/atoms/Input";
+import { cn } from "@/lib/cn";
 
 export interface FormFieldProps extends Omit<InputProps, "id"> {
   label: string;
@@ -29,9 +30,7 @@ export function FormField({
           id={fieldId}
           invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
-          className={[endAdornment ? "pr-10" : "", className]
-            .filter(Boolean)
-            .join(" ")}
+          className={cn(Boolean(endAdornment) && "pr-10", className)}
           {...inputProps}
         />
         {endAdornment && (

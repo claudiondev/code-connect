@@ -1,4 +1,5 @@
 import { ButtonHTMLAttributes, ReactNode } from "react";
+import { cn } from "@/lib/cn";
 
 export type ButtonVariant = "primary" | "social" | "ghost";
 
@@ -33,16 +34,14 @@ export function Button({
       {...props}
       disabled={isDisabled}
       aria-busy={loading || undefined}
-      className={[
+      className={cn(
         "inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950",
         "disabled:cursor-not-allowed disabled:opacity-60",
         VARIANT_CLASSES[variant],
-        fullWidth ? "w-full" : "",
-        className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+        fullWidth && "w-full",
+        className
+      )}
     >
       {loading && (
         <span
