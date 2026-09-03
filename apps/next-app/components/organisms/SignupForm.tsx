@@ -4,20 +4,23 @@ import { FormEvent, useState } from "react";
 import { FormField } from "@/components/molecules/FormField";
 import { PasswordField } from "@/components/molecules/PasswordField";
 import { Button } from "@/components/atoms/Button";
-import { TextLink } from "@/components/atoms/TextLink";
-import { signInWithPassword } from "@/lib/auth";
+import { signUp } from "@/lib/auth";
 import { isValidEmail, MIN_PASSWORD_LENGTH } from "@/lib/validation";
 
 interface FieldErrors {
+  name?: string;
   email?: string;
   password?: string;
+  confirmPassword?: string;
 }
 
 type Status = "idle" | "loading" | "error";
 
-export function LoginForm() {
+export function SignupForm() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<Status>("idle");
   const [formError, setFormError] = useState<string | null>(null);
@@ -25,12 +28,20 @@ export function LoginForm() {
   function validate(): FieldErrors {
     const errors: FieldErrors = {};
 
+    if (!name.trim()) {
+      errors.name = "Informe seu nome.";
+    }
+
     if (!isValidEmail(email)) {
       errors.email = "Informe um email válido.";
     }
 
     if (password.length < MIN_PASSWORD_LENGTH) {
       errors.password = `A senha precisa de pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`;
+    }
+
+    if (confirmPassword !== password) {
+      errors.confirmPassword = "As senhas não coincidem.";
     }
 
     return errors;
@@ -54,11 +65,11 @@ export function LoginForm() {
 
     setStatus("loading");
 
-    const result = await signInWithPassword({ email, password });
+    const result = await signUp({ name, email, password });
 
     if (!result.ok) {
       setStatus("error");
-      setFormError(result.error ?? "Não foi possível entrar. Tente novamente.");
+      setFormError(result.error ?? "Não foi possível criar a conta. Tente novamente.");
       return;
     }
 
@@ -79,6 +90,17 @@ export function LoginForm() {
       )}
 
       <FormField
+        label="nome"
+        type="text"
+        placeholder="Ada Lovelace"
+        autoComplete="name"
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        error={fieldErrors.name}
+        disabled={isLoading}
+      />
+
+      <FormField
         label="email"
         type="email"
         placeholder="dev@example.com"
@@ -89,25 +111,28 @@ export function LoginForm() {
         disabled={isLoading}
       />
 
-      <div>
-        <PasswordField
-          label="senha"
-          placeholder="••••••••"
-          autoComplete="current-password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          error={fieldErrors.password}
-          disabled={isLoading}
-        />
-        <div className="mt-1.5 text-right">
-          <TextLink href="#" className="text-xs">
-            esqueci a senha
-          </TextLink>
-        </div>
-      </div>
+      <PasswordField
+        label="senha"
+        placeholder="••••••••"
+        autoComplete="new-password"
+        value={password}
+        onChange={(event) => setPassword(event.target.value)}
+        error={fieldErrors.password}
+        disabled={isLoading}
+      />
+
+      <PasswordField
+        label="confirmar senha"
+        placeholder="••••••••"
+        autoComplete="new-password"
+        value={confirmPassword}
+        onChange={(event) => setConfirmPassword(event.target.value)}
+        error={fieldErrors.confirmPassword}
+        disabled={isLoading}
+      />
 
       <Button type="submit" fullWidth loading={isLoading}>
-        Entrar
+        Criar conta
       </Button>
     </form>
   );
